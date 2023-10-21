@@ -1,5 +1,6 @@
 import uuid
 import chromadb
+
 def get_db(path, db_name):
     return chromadb.PersistentClient(path).get_or_create_collection(db_name)
 
@@ -12,10 +13,16 @@ def add_or_update_employees(employee_embeddings, employee_metadata, vector_db, e
         ids=employee_ids
     )
 
-def make_team(core_member, vector_db, n_members=1, tags=[]):
-    return vector_db.query(
-        query_embeddings=core_member,
-        where=tags,
-        n_results=n_members, 
-        include=['metadata']
-    )
+def make_team(core_member, vector_db, member_tags=[]):
+    team = []
+    for member in member_tags:
+        new_member = vector_db.query(
+            query_embeddings=core_member,
+            where=member,
+            n_results=1, 
+            include=['metadatas']
+        )['metadatas']
+        if len(new_member) == 0:
+            raise ValueError("No employee found with tag: {}".format(member))
+        team.append(new_member[0])
+    return team

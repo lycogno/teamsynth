@@ -32,9 +32,16 @@ def make_team(core_member_embedding, vector_db, member_tags=[]):
             raise ValueError("No employee found with tag: {}".format(member))
         for j in range(count):
             team.append(new_member['metadatas'][0][j])
-            print(new_member['embeddings'][0][j])
             team_personality_vector = [i*n_members for i in team_personality_vector]
             team_personality_vector = [team_personality_vector[i] + new_member['embeddings'][0][j][i] for i in range(len(team_personality_vector))]
             team_personality_vector = [i/(n_members + 1) for i in team_personality_vector]
             n_members += 1
     return team, team_personality_vector
+
+def find_employee(name, vector_db, n):
+    return vector_db.query(
+        query_embeddings=[0]*n,
+        where={'name': name},
+        n_results=1,
+        include=['embeddings']
+    )['embeddings'][0][0]

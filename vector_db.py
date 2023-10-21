@@ -39,9 +39,10 @@ def make_team(core_member_embedding, vector_db, member_tags=[]):
     return team, team_personality_vector
 
 def find_employee(name, vector_db, n):
-    return vector_db.query(
+    a = vector_db.query(
         query_embeddings=[0]*n,
         where={'name': name},
         n_results=1,
-        include=['embeddings']
-    )['embeddings'][0][0]
+        include=['embeddings', 'metadatas']
+    )
+    return a['embeddings'][0][0], a['metadatas'][0][0]

@@ -1,6 +1,9 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
+from nrclex import NRCLex
+import nltk
+nltk.download('punkt')
 
 class SentimentClassifier(nn.Module):
     def __init__(self, config, is_training=True):
@@ -17,3 +20,5 @@ class SentimentClassifier(nn.Module):
         x = self.fc3(x)
         return F.log_softmax(x, dim=1)
 
+def tokenizeNRCLex(text):
+    return [x for _, x  in NRCLex(text).affect_frequencies.items()]

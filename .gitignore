@@ -1,2 +1,5 @@
 env/
 .DS_Store
+___pycache__/
+.vscode/
+chromadb/

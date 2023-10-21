@@ -6,7 +6,7 @@ def get_db(path, db_name):
 
 def add_or_update_employees(employee_embeddings, employee_metadata, vector_db, employee_ids=[]):
     if not employee_ids:
-        employee_ids = [uuid.uuid5(str(employee_embeddings)) for _ in range(len(employee_embeddings))]
+        employee_ids = [str(uuid.uuid4()) for _ in range(len(employee_embeddings))]
     vector_db.upsert(
         embeddings=employee_embeddings,
         metadatas=employee_metadata,
@@ -15,27 +15,26 @@ def add_or_update_employees(employee_embeddings, employee_metadata, vector_db, e
 
 def make_team(core_member_embedding, vector_db, member_tags=[]):
     team = []
-    n_members = 1
+    n_members = 0
     team_personality_vector = core_member_embedding
     for member in member_tags:
+        count = 1
+        if 'count' in member.keys():
+            count = member['count']
+            member.pop('count')
         new_member = vector_db.query(
             query_embeddings=team_personality_vector,
             where=member,
-            n_results=1, 
-            include=['metadatas']
-        )['metadatas']
+            n_results=count, 
+            include=['metadatas', 'embeddings']
+        )
         if len(new_member) == 0:
             raise ValueError("No employee found with tag: {}".format(member))
-        team.append(new_member[0])
-        team_personality_vector *= n_members
-        team_personality_vector += new_member[0]
-        team_personality_vector /= (n_members + 1)
-        n_members += 1
-    return team
-
-def get_details(employee):
-    return {
-        'name': employee['name'],
-        'designation': employee['email'],
-        'tags': list([(key, value) for key, value in employee if key not in ['name', 'email']])
-    }
+        for j in range(count):
+            team.append(new_member['metadatas'][0][j])
+            print(new_member['embeddings'][0][j])
+            team_personality_vector = [i*n_members for i in team_personality_vector]
+            team_personality_vector = [team_personality_vector[i] + new_member['embeddings'][0][j][i] for i in range(len(team_personality_vector))]
+            team_personality_vector = [i/(n_members + 1) for i in team_personality_vector]
+            n_members += 1
+    return team, team_personality_vector

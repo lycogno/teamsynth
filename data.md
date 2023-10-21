@@ -1,3 +1,0 @@
-- MBTI
-- Essays
-- mypersonality OCEAN

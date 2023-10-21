@@ -21,4 +21,4 @@ class SentimentClassifier(nn.Module):
         return F.log_softmax(x, dim=1)
 
 def tokenizeNRCLex(text):
-    return [x for _, x  in NRCLex(text).affect_frequencies.items()]
+    return torch.Tensor([x for _, x  in NRCLex(text).affect_frequencies.items()])

@@ -9,13 +9,11 @@ class BERTEncoder(nn.Module):
     def __init__(self, config, is_training = True):
         super(BERTEncoder, self).__init__()
         self.enc =  BertModel.from_pretrained('bert-base-uncased')
-        self.tokeniser = BertTokenizer.from_pretrained('bert-base-uncased')
         self.att = nn.Linear(768, 1)
         self.fc = nn.Linear(768, config['embedding_size'])
 
-    def forward(self, text_strings):
-        text_strings = self.tokeniser(text_strings, return_tensors="pt", padding=True, truncation=True)
-        src = self.enc(**text_strings)
+    def forward(self, tokens):
+        src = self.enc(**tokens)
         src = src.last_hidden_state
 
         wt = self.att(src)
@@ -66,11 +64,10 @@ class APP(nn.Module):
         mbti_loss = criterion(predictions['mbti'], torch.Tensor([labels]).long())
         return mbti_loss
 
-    def forward(self, text):
+    def forward(self, tokens):
         config = self.config
-
         # get text embeddings
-        text_embeddings = self._text_encoder(text)
+        text_embeddings = self._text_encoder(tokens)
 
         # get personality embeddings
         personality_embeddings = self._fc2(F.relu(self._fc1(text_embeddings)))

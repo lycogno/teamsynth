@@ -1,5 +1,4 @@
 # write a training loop to train the APP model
-
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -11,7 +10,6 @@ import json
 
 ESSAYS_PATH = 'datasets/essays.csv'
 MBTI_PATH = 'datasets/mbti_1.csv'
-
 
 def load_data(essays_path, mbti_path):
     essays_df = pd.read_csv(ESSAYS_PATH, encoding='latin1')
@@ -39,37 +37,43 @@ cat_columns = ['cEXT', 'cNEU', 'cAGR', 'cCON', 'cOPN']
 running_loss_essay = 0
 running_loss_mbti = 0
 
-for i in range(epochs):
-    for index, row in essays_df.iterrows():
-        text = row['TEXT']
-        labels = row[cat_columns].to_dict()
+# profile the code using cProfile
+
+
+def training_loop(model, data):
+    essays_df, mbti_df = data
+    for i in range(epochs):
+        for index, row in essays_df.iterrows():
+            text = row['TEXT']
+            labels = row[cat_columns].to_dict()
+            
+            optimizer.zero_grad()
+
+            preds = model(text)
+            loss = model.get_ocean_loss(preds, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss_essay += loss.item()
+
+            if index % 1 == 0:    # print every 2000 mini-batches
+                print(f'essay index: {index + 1}, epoch: {i + 1} loss: {running_loss_essay / 100:.3f}')
+                running_loss_essay = 0.0
+
+        for index, row in mbti_df.iterrows():
+            text = row['posts']
+            labels = row['type']
+
+            optimizer.zero_grad()
+
+            preds = model(text)
+            loss = model.get_mbti_loss(preds, labels)
+            loss.backward()
+            optimizer.step()
+
+            running_loss_mbti += loss.item()
+
+            if index % 100 == 1:    # print every 2000 mini-batches
+                print(f'mbti index: {index + 1}, epoch: {i + 1} loss: {running_loss_mbti / 100:.3f}')
+                running_loss_mbti = 0.0
         
-        optimizer.zero_grad()
-
-        preds = model(text)
-        loss = model.get_ocean_loss(preds, labels)
-        loss.backward()
-        optimizer.step()
-
-        running_loss_essay += loss.item()
-
-        if index % 1 == 0:    # print every 2000 mini-batches
-            print(f'essay index: {index + 1}, epoch: {i + 1} loss: {running_loss_essay / 100:.3f}')
-            running_loss_essay = 0.0
-
-    for index, row in mbti_df.iterrows():
-        text = row['posts']
-        labels = row['type']
-
-        optimizer.zero_grad()
-
-        preds = model(text)
-        loss = model.get_mbti_loss(preds, labels)
-        loss.backward()
-        optimizer.step()
-
-        running_loss_mbti += loss.item()
-
-        if index % 100 == 1:    # print every 2000 mini-batches
-            print(f'mbti index: {index + 1}, epoch: {i + 1} loss: {running_loss_mbti / 100:.3f}')
-            running_loss_mbti = 0.0

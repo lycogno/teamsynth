@@ -13,7 +13,7 @@ class BERTEncoder(nn.Module):
         self.fc = nn.Linear(768, config['embedding_size'])
 
     def forward(self, tokens):
-        src = self.enc(**tokens)
+        src = self.enc(input_ids=tokens['input_ids'], attention_mask=tokens['attention_mask'], return_dict=True)
         src = src.last_hidden_state
 
         wt = self.att(src)
@@ -54,7 +54,7 @@ class APP(nn.Module):
         
         OCEAN_loss = 0
         for cat in ['cOPN', 'cCON', 'cEXT', 'cAGR', 'cNEU']:
-            OCEAN_loss += criterion(predictions[cat], torch.Tensor([labels['cOPN']]).long())
+            OCEAN_loss += criterion(predictions[cat], labels[cat].long())
 
         return OCEAN_loss    
 

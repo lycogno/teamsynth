@@ -52,18 +52,18 @@ class APP(nn.Module):
         self.N_classifier = nn.Linear(config['ocean_size'], 2)
 
     def get_ocean_loss(self, predictions, labels):
+        criterion = nn.CrossEntropyLoss()
+        
         OCEAN_loss = 0
-
-        OCEAN_loss += F.cross_entropy(predictions['cOPN'], labels['cOPN'])
-        OCEAN_loss += F.cross_entropy(predictions['cCON'], labels['cCON'])
-        OCEAN_loss += F.cross_entropy(predictions['cEXT'], labels['cEXT'])
-        OCEAN_loss += F.cross_entropy(predictions['cAGR'], labels['cAGR'])
-        OCEAN_loss += F.cross_entropy(predictions['cNEU'], labels['cNEU'])
+        for cat in ['cOPN', 'cCON', 'cEXT', 'cAGR', 'cNEU']:
+            OCEAN_loss += criterion(predictions[cat], torch.Tensor([labels['cOPN']]).long())
 
         return OCEAN_loss    
 
     def get_mbti_loss(self, predictions, labels):
-        mbti_loss = F.cross_entropy(predictions['mbti'], labels['mbti'])
+        criterion = nn.CrossEntropyLoss()
+
+        mbti_loss = criterion(predictions['mbti'], torch.Tensor([labels]).long())
         return mbti_loss
 
     def forward(self, text):

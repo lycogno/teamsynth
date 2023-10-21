@@ -13,11 +13,13 @@ def add_or_update_employees(employee_embeddings, employee_metadata, vector_db, e
         ids=employee_ids
     )
 
-def make_team(core_member, vector_db, member_tags=[]):
+def make_team(core_member_embedding, vector_db, member_tags=[]):
     team = []
+    n_members = 1
+    team_personality_vector = core_member_embedding
     for member in member_tags:
         new_member = vector_db.query(
-            query_embeddings=core_member,
+            query_embeddings=team_personality_vector,
             where=member,
             n_results=1, 
             include=['metadatas']
@@ -25,4 +27,15 @@ def make_team(core_member, vector_db, member_tags=[]):
         if len(new_member) == 0:
             raise ValueError("No employee found with tag: {}".format(member))
         team.append(new_member[0])
+        team_personality_vector *= n_members
+        team_personality_vector += new_member[0]
+        team_personality_vector /= (n_members + 1)
+        n_members += 1
     return team
+
+def get_details(employee):
+    return {
+        'name': employee['name'],
+        'designation': employee['email'],
+        'tags': list([(key, value) for key, value in employee if key not in ['name', 'email']])
+    }

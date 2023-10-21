@@ -1,0 +1,6 @@
+{
+    "embedding_size": 728,
+    "hidden_size": 1024,
+    "pers_embedding_size": 128,
+    "ocean_size": 728
+}

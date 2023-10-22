@@ -51,3 +51,4 @@ def find_employee(name, vector_db, n):
         include=['embeddings', 'metadatas']
     )
     return a['embeddings'][0][0], a['metadatas'][0][0]
+

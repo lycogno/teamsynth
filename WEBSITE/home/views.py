@@ -4,6 +4,17 @@ from .forms import TeamMembersForm, TeamForm
 from django.shortcuts import redirect
 
 # Create your views here.
+def generate_teams(query):
+    from random import randint
+    first_names = ["Emily", "Jacob", "Sophia", "Liam", "Olivia", "Ethan", "Ava", "Michael", "Mia", "Benjamin"]
+    last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Rodriguez", "Wilson"]
+
+    result = {}
+    for key, value in query.items():
+        name = first_names[randint(0, len(first_names)-1)] + ' ' + last_names[randint(0, len(last_names)-1)]
+        result[name] = value
+    return result
+    
 
 def index(request):
 
@@ -52,8 +63,8 @@ def teams2(request, team_size):
                 d[key] = vals
             print(d)
 
-            OUTPUT = None
-            return render(request, 'pages/custom-result.html', {'query': d, 'OUTPUT': OUTPUT})
+            OUTPUT = generate_teams(d)
+            return render(request, 'pages/custom-result.html', {'query': d, 'result': OUTPUT})
     else:
         form = TeamForm(team_size=team_size)
 

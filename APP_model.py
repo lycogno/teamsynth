@@ -1,14 +1,14 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-from transformers import BertModel, BertTokenizer
+from transformers import DistilBertModel, BertTokenizer
 
 import numpy as np
 
 class BERTEncoder(nn.Module):
     def __init__(self, config, is_training = True):
         super(BERTEncoder, self).__init__()
-        self.enc =  BertModel.from_pretrained('bert-base-uncased')
+        self.enc =  DistilBertModel.from_pretrained('distilbert-base-uncased')
         self.att = nn.Linear(768, 1)
         self.fc = nn.Linear(768, config['embedding_size'])
 
@@ -36,7 +36,23 @@ class APP(nn.Module):
 
         self.config = config
 
-        self._fc1 = nn.Linear(config['embedding_size'], config['hidden_size'])
+        self.fully_connected = nn.Sequential(
+            nn.Linear(config['embedding_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+            nn.Linear(config['hidden_size'], config['hidden_size']),
+            nn.ReLU(),
+        )
+
         self._fc2 = nn.Linear(config['hidden_size'], config['pers_embedding_size'])
 
         self.mbti_classifier = nn.Linear(config['pers_embedding_size'], 16)
@@ -51,17 +67,17 @@ class APP(nn.Module):
 
     def get_ocean_loss(self, predictions, labels):
         criterion = nn.CrossEntropyLoss()
-        
+
         OCEAN_loss = 0
         for cat in ['cOPN', 'cCON', 'cEXT', 'cAGR', 'cNEU']:
-            OCEAN_loss += criterion(predictions[cat], labels[cat].long())
+            OCEAN_loss += criterion(predictions[cat], labels[cat].long().to(device))
 
-        return OCEAN_loss    
+        return OCEAN_loss
 
     def get_mbti_loss(self, predictions, labels):
         criterion = nn.CrossEntropyLoss()
 
-        mbti_loss = criterion(predictions['mbti'], torch.Tensor([labels]).long())
+        mbti_loss = criterion(predictions['mbti'], torch.Tensor([labels]).long().to(device))
         return mbti_loss
 
     def forward(self, tokens):
@@ -70,7 +86,7 @@ class APP(nn.Module):
         text_embeddings = self._text_encoder(tokens)
 
         # get personality embeddings
-        personality_embeddings = self._fc2(F.relu(self._fc1(text_embeddings)))
+        personality_embeddings = self._fc2(F.relu(self.fully_connected(text_embeddings)))
 
         # get mbti
         mbti = self.mbti_classifier(F.relu(personality_embeddings))

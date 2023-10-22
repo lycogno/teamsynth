@@ -1,0 +1,73 @@
+{% extends 'layouts/base_background.html' %}
+{% load static %}
+{% block title %} TeamSynth {% endblock title %}
+{% block header %} {% endblock header %}
+{% block body %} class="index-page bg-gray-200" {% endblock body %}
+{% block content %}
+<!-- -------- START HEADER 1 w/ text and image on right ------- -->
+<header>
+  <div class="page-header min-vh-100"
+    style="background-image: url(&#39;https://media.wired.com/photos/5955b398ad90646d424bb3e3/master/w_1920,c_limit/Quanta_WhiteonBlack_v5_ALT.gif&#39;);"
+    loading="lazy">
+    <span class="mask bg-gradient-dark opacity-5"></span>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-7 d-flex justify-content-center flex-column">
+          <h1 class="text-white mb-4">TeamSynth</h1>
+          <p class="text-white opacity-8 lead pe-5 me-5"> <b> Connecting people one embedding at a time. </b> </p>
+          
+          <div class="buttons">
+            <a href="{% url 'teams' %}">
+              <button type="button" class="btn btn-white mt-4">
+                Create Teams
+              </button>
+            </a>
+            <!-- <button type="button" class="btn text-white shadow-none mt-4">Read more</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- -------- END HEADER 1 w/ text and image on right ------- -->
+{% endblock content %}
+{% block footer %} {% endblock footer %}
+{% block javascripts %}
+<!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
+<script src="{% static 'js/plugins/countup.min.js' %}"></script>
+<script src="{% static 'js/plugins/choices.min.js' %}"></script>
+<script src="{% static 'js/plugins/prism.min.js' %}"></script>
+<script src="{% static 'js/plugins/highlight.min.js' %}"></script>
+<!--  Plugin for Parallax, full documentation here: https://github.com/dixonandmoe/rellax -->
+<script src="{% static 'js/plugins/rellax.min.js' %}"></script>
+<!--  Plugin for TiltJS, full documentation here: https://gijsroge.github.io/tilt.js/ -->
+<script src="{% static 'js/plugins/tilt.min.js' %}"></script>
+<!--  Plugin for Selectpicker - ChoicesJS, full documentation here: https://github.com/jshjohnson/Choices -->
+<script src="{% static 'js/plugins/choices.min.js' %}"></script>
+<script type="text/javascript">
+  if (document.getElementById('state1')) {
+    const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
+    if (!countUp.error) {
+      countUp.start();
+    } else {
+      console.error(countUp.error);
+    }
+  }
+  if (document.getElementById('state2')) {
+    const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
+    if (!countUp1.error) {
+      countUp1.start();
+    } else {
+      console.error(countUp1.error);
+    }
+  }
+  if (document.getElementById('state3')) {
+    const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
+    if (!countUp2.error) {
+      countUp2.start();
+    } else {
+      console.error(countUp2.error);
+    };
+  }
+</script>
+{% endblock javascripts %}

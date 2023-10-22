@@ -1,0 +1,67 @@
+{% extends 'layouts/base_background.html' %}
+{% load static %}
+{% block title %} TeamSynth {% endblock title %}
+{% block header %} {% endblock header %}
+{% block body %} class="index-page bg-gray-100" {% endblock body %}
+{% block content %}
+<!-- -------- START HEADER 1 w/ text and image on right ------- -->
+<section class="py-7">
+  <div class="container">
+    <div class="row justify-space-between py-2">
+      <div class="col-lg-7 mx-auto">
+        <form action="{% url 'teams2' team_size %}" method="post">
+          {% csrf_token %}
+          {% for i in field_range %}
+          <div class="input-group input-group-outline mb-4">
+            <label class="form-label">Team Member {{ i}}</label>
+            <input class="form-control" type="text" name="team_member_{{ i }}">
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- -------- END HEADER 1 w/ text and image on right ------- -->
+{% endblock content %}
+{% block footer %} {% endblock footer %}
+{% block javascripts %}
+<!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
+<script src="{% static 'js/plugins/countup.min.js' %}"></script>
+<script src="{% static 'js/plugins/choices.min.js' %}"></script>
+<script src="{% static 'js/plugins/prism.min.js' %}"></script>
+<script src="{% static 'js/plugins/highlight.min.js' %}"></script>
+<!--  Plugin for Parallax, full documentation here: https://github.com/dixonandmoe/rellax -->
+<script src="{% static 'js/plugins/rellax.min.js' %}"></script>
+<!--  Plugin for TiltJS, full documentation here: https://gijsroge.github.io/tilt.js/ -->
+<script src="{% static 'js/plugins/tilt.min.js' %}"></script>
+<!--  Plugin for Selectpicker - ChoicesJS, full documentation here: https://github.com/jshjohnson/Choices -->
+<script src="{% static 'js/plugins/choices.min.js' %}"></script>
+<script type="text/javascript">
+  if (document.getElementById('state1')) {
+    const countUp = new CountUp('state1', document.getElementById("state1").getAttribute("countTo"));
+    if (!countUp.error) {
+      countUp.start();
+    } else {
+      console.error(countUp.error);
+    }
+  }
+  if (document.getElementById('state2')) {
+    const countUp1 = new CountUp('state2', document.getElementById("state2").getAttribute("countTo"));
+    if (!countUp1.error) {
+      countUp1.start();
+    } else {
+      console.error(countUp1.error);
+    }
+  }
+  if (document.getElementById('state3')) {
+    const countUp2 = new CountUp('state3', document.getElementById("state3").getAttribute("countTo"));
+    if (!countUp2.error) {
+      countUp2.start();
+    } else {
+      console.error(countUp2.error);
+    };
+  }
+</script>
+{% endblock javascripts %}

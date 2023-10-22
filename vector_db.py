@@ -13,7 +13,7 @@ def add_or_update_employees(employee_embeddings, employee_metadata, vector_db, e
         ids=employee_ids
     )
 
-def make_team(core_member_embedding, vector_db, member_tags=[]):
+def make_team(core_member_a embedding, vector_db, member_tags=[]):
     team = []
     n_members = 0
     team_personality_vector = core_member_embedding
